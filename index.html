@@ -13,57 +13,116 @@
             background-size: cover;
 
         }
+
     </style>
     <script src="./js/jquery-3.5.1.min.js"></script>
 </head>
 
 <body>
-
-</body>
-<canvas class="my-canvas"></canvas>
-<script>
-    var canvas = document.querySelector('.my-canvas')
-    var ctx = canvas.getContext('2d')
-    canvas.width = 934 / 2
-    canvas.height = 641 / 2
-    var arrayObject = {
-        walk: []
-
-    }
-    var counter = 0
-    $.get('./walk.json').then((response) => {
-        var paths = response
-        paths.forEach((itm, idx, data) => {
-            let image = new Image()
-            image.src = itm.path
-            arrayObject.walk.push(image)
-            image.onload = function () {
-                counter++
-                if (counter == data.length - 1) {
-                    startWalk()
+    <canvas class="my-canvas"></canvas>
+    <button>WALK</button>
+    <button>RUN</button>
+    <script>
+        var canvas = document.querySelector('.my-canvas')
+        var ctx = canvas.getContext('2d')
+        canvas.width = 934 / 2
+        canvas.height = 641 / 2
+        var arrayObject = {
+            walk: [],
+            run: [],
+            idle: [],
+    
+        }
+        var counter = 0
+        $.get('./santa.json').then((response) => {
+            var walkpaths = response.walk;
+            var runpaths = response.run;
+            walkpaths.forEach((itm, idx, data) => {
+                let image = new Image()
+                image.src = itm.path
+                arrayObject.walk.push(image)
+                image.onload = function () {
+    
                 }
+            })
+    
+            counter = 0
+            runpaths.forEach((itm, idx, data) => {
+                let image = new Image()
+                image.src = itm.path
+                arrayObject.run.push(image)
+                image.onload = function () {
+                    
+                    counter++
+                    if (counter == data.length - 1) {
+                        reset()
+                        $('button').on('click', (event)=>{
+                        switch(event.target.textContent){
+                            case 'RUN':
+                                startRun()
+                                break
 
-            }
+                                case 'WALK':
+                                startWalk()
+                                break
+
+                        }
+                        })
+                    }
+
+                }
+            })
+    
         })
-    })
-    let animeCounter = 0
-    let animX = -100
-    function startWalk() {
-        let walkCnclr = setInterval(() => {
-            console.log('walking')
-            ctx.clearRect(0, 0, 934, 641)
-            animX += 5
-            ctx.drawImage(arrayObject.walk[animeCounter++], animX, 160, 934 / 4, 641 / 4)
-            if (animeCounter >= arrayObject.walk.length) {
-                animeCounter = 0
-            }
-            if (animX > 934 / 2) {
-                clearInterval(walkCnclr)
-                animX = -100
-            }
-        }, 1000 / 8)
+        let animeCounter = 0
+        let animX = -100
 
-    }
-</script>
+        function startWalk() {
+            reset()
+            let walkCnclr = setInterval(() => {
+                console.log('walking')
+                ctx.clearRect(0, 0, 934, 641)
+                animX += 5
+                ctx.drawImage(arrayObject.walk[animeCounter++], animX, 160, 934 / 4, 641 / 4)
+                if (animeCounter >= arrayObject.walk.length) {
+                    animeCounter = 0
+                }
+                if (animX > 934 / 2) {
+                    clearInterval(walkCnclr)
+                    animX = -100
+                    counter = 0
+                }
+            }, 1000 / 8)
+    
+        }
+    
+        function reset() {
+            counter=0
+            animX = -100
+            animeCounter = 0
+        }
+    
+        function startRun() {
+            reset()
+            let runCnclr = setInterval(() => {
+                console.log('running')
+                ctx.clearRect(0, 0, 934, 641)
+                animX += 15
+                ctx.drawImage(arrayObject.run[animeCounter++], animX, 160, 934 / 4, 641 / 4)
+                if (animeCounter >= arrayObject.run.length) {
+                    animeCounter = 0
+                }
+                if (animX > 934 / 2) {
+                    clearInterval(runCnclr)
+                    animX = -100
+                    counter = 0
+                }
+            }, 1000 / 8)
+    
+        }
+    
+    </script>
+</body>
+
 
 </html>
