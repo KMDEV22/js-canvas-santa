@@ -30,6 +30,7 @@
     <button>IDLE AFTER WALK</button>
     <button>RUN</button>
     <button>IDLE AFTER RUN</button>
+    <button>JUMP</button>
 
 
     <script>
@@ -41,6 +42,8 @@
             walk: [],
             run: [],
             idle: [],
+            jump: [],
+            
     
         }
         var counter = 0
@@ -48,6 +51,7 @@
             var walkpaths = response.walk;
             var runpaths = response.run;
             var idlepaths = response.idle;
+            var jumppaths = response.jump;
             walkpaths.forEach((itm, idx, data) => {
                 let image = new Image()
                 image.src = itm.path
@@ -67,6 +71,16 @@
     
                 }
             })
+
+            jumppaths.forEach((itm, idx, data) => {
+                let image = new Image()
+                image.src = itm.path
+                arrayObject.jump.push(image)
+                image.onload = function () {
+    
+                }
+            })
+
 
     
             counter = 0
@@ -95,6 +109,10 @@
 
                                 case 'IDLE AFTER RUN':
                                 beIdle(18)
+                                break
+
+                                case 'JUMP':
+                                startJump(18)
                                 break
 
                         }
@@ -142,6 +160,10 @@
                 clearInterval(idleCnclr)
             }
 
+            if(jumpCnclr){
+                clearInterval(jumpCnclr)
+            }
+
         }
     
         let runCnclr
@@ -183,6 +205,25 @@
             }, 1000 / FPS)
     
         }
+
+        let jumpCnclr
+        function startJump() {
+            reset()
+            animX = 120
+            let offsetY = 160
+                jumpCnclr = setInterval(() => {
+                console.log('jumping')
+                ctx.clearRect(0, 0, 934, 641)
+                let animY = Math.max(Math.sin(animeCounter +16)*8+ offsetY,0)
+                ctx.drawImage(arrayObject.jump[animeCounter++], animX, animY,  934 / 4, 641 / 4)
+                if (animeCounter >= arrayObject.jump.length) {
+                    animeCounter = 0
+                }
+                
+            }, 1000 / 8)
+    
+        }
+
 
     
     </script>
